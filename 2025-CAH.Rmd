@@ -1,0 +1,47 @@
+---
+title: "2025-CAH"
+author: "Josephine McKelvy"
+date: "2025-06-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document that generates both content as well as the output of any embedded R code chunks within the document. 
+
+```{r}
+#Load Data set A.csv:
+Data_set_A <- read_csv("Data set A.csv")
+#Remove rows with NA in all columns:
+clean_A <- Data_set_A %>% na.omit()
+
+#Load Data set B.csv:
+Data_set_B <- read_csv("Data set B.csv")
+#Remove rows with NA in all columns:
+clean_B <- Data_set_B %>% na.omit()
+```
+```{r}
+#chr is a categorical variable with characters
+#dbl is a continuous variable with a decimal value for "double precision"
+
+#Return frequencies/counts of each categorical response option:
+table(clean_A$condition, clean_A$income_level)
+table(clean_B$increased_contribution)
+levels(as.factor(clean_A$condition))
+
+#Merge data frames by ID variable
+contiguous <- merge(clean_A,clean_B,by="identifier")
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
