@@ -4,44 +4,117 @@ author: "Josephine McKelvy"
 date: "2025-06-30"
 output: html_document
 ---
-
+# Getting Started
+This R markdown files includes steps for ...
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Install packages (one-time)
+
+# Load libraries:
+library(dplyr)
+library(knitr)
+library(readr) 
+library(summarytools)
 ```
-
-## R Markdown
-
-This is an R Markdown document that generates both content as well as the output of any embedded R code chunks within the document. 
-
+# Cleaning
 ```{r}
-#Load Data set A.csv:
-Data_set_A <- read_csv("Data set A.csv")
-#Remove rows with NA in all columns:
+# Load Data sets:
+Data_set_A <- readr::read_csv("Data set A.csv")
+Data_set_B <- readr::read_csv("Data set B.csv")
+
+# Check response categories.
+```
+```{r}
+# There are 3 character (or raw text) columns (that should be factor variables) and an identifier that is a double (or real number) data type.
+
+# Ascertain the response categories (or levels) for the 3 nominal/ordinal variables:
+response_condition <- unique(Data_set_A$condition)
+response_income_level <- unique(Data_set_A$income_level)
+response_outcome <- unique(Data_set_B$increased_contribution)
+
+# Save categorical variables as factor in a clean data set:
+clean_A <- Data_set_A %>%
+  mutate(
+    condition = factor(condition,
+                levels = c("control","recommendation")),
+    income_level = factor(income_level,
+                   levels = c("non-LMI","LMI"))
+  )
+
+clean_B <- Data_set_B %>%
+  mutate(
+    increased_contribution = factor(increased_contribution,
+                                    levels = c("1", "closed"))
+  )
+
+# Check missingness:
+summarytools::dfSummary(clean_A) #There are 1002 duplicates. There are only 1001 distinct identifiers, thus only 1001 cases, ranging from 1000 to 2000.
+summarytools::dfSummary(clean_B) #There are 751 duplicates. There are only 752 distinct identifiers, thus only 752 cases, ranging from 1457 to 2381.
+
+#Remove empty rows with NA in ALL columns:
+clean_A[rowSums(is.na(clean_A)) != ncol(clean_A), ]
+clean_B[rowSums(is.na(clean_B)) != ncol(clean_B), ]
+
+#Remove duplicate cases:
+clean_A <- distinct(clean_A)
+clean_B <- distinct(clean_B)
+
+summarytools::dfSummary(clean_A)
+#There are 2 rows with missing condition
+
+library(dplyr)
+#Remove rows with any NA in each column:
 clean_A <- Data_set_A %>% na.omit()
+
+
+```
+## Exploratory Data Analysis 
+https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html
+```{r}
 
 #Load Data set B.csv:
 Data_set_B <- read_csv("Data set B.csv")
 #Remove rows with NA in all columns:
 clean_B <- Data_set_B %>% na.omit()
+
+
+ggplot(data = diamonds) +
+  geom_count(mapping = aes(x = cut, y = color))
+
 ```
 ```{r}
 #chr is a categorical variable with characters
 #dbl is a continuous variable with a decimal value for "double precision"
 
-#Return frequencies/counts of each categorical response option:
-table(clean_A$condition, clean_A$income_level)
+
 table(clean_B$increased_contribution)
 levels(as.factor(clean_A$condition))
 
 #Merge data frames by ID variable
 contiguous <- merge(clean_A,clean_B,by="identifier")
 ```
-## Including Plots
+## Clean, Transform
+```{r}
+data(nepali)
+nepali <- nepali %>%
+  # Limit to certain columns
+  select(id, sex, wt, ht, age) %>%
+  # Convert id and sex to factors
+  mutate(id = factor(id),
+         sex = factor(sex, levels = c(1, 2),
+                      labels = c("Male", "Female"))) %>%
+```
 
-You can also embed plots, for example:
+## Analysis
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Null Hypothesis: there is no difference in increased contributions between the control and recommendation conditions
+
+```{r}
+#Return the frequencies/counts of the categorical outcome by condition:
+ctab_A <- table(clean_A$condition, clean_A$income_level)
+print(ctab_A)
+summary.table(ctab_A)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
