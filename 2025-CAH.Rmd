@@ -13,108 +13,64 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Load libraries:
 library(dplyr)
+library(ggplot2)
 library(knitr)
 library(readr) 
 library(summarytools)
 ```
-# Cleaning
+# Transforming, Cleaning
 ```{r}
 # Load Data sets:
 Data_set_A <- readr::read_csv("Data set A.csv")
 Data_set_B <- readr::read_csv("Data set B.csv")
 
-# Check response categories.
-```
-```{r}
+# Merge data frames by ID variable
+contiguous <- merge(Data_set_A, Data_set_B, by="identifier")
+summarytools::dfSummary(contiguous) 
+
+# There are multiple duplicates and 371 distinct identifiers common to both data sets, thus up to 371 cases for the analytic sample. 
+# Remove empty rows and duplicate cases:
+contiguous <- distinct(contiguous) 
+
+# There are still 3 rows with missing conditions.
+# Keep cases where condition is not missing:
+contiguous <- filter(contiguous,!is.na(condition)) 
+
 # There are 3 character (or raw text) columns (that should be factor variables) and an identifier that is a double (or real number) data type.
-
-# Ascertain the response categories (or levels) for the 3 nominal/ordinal variables:
-response_condition <- unique(Data_set_A$condition)
-response_income_level <- unique(Data_set_A$income_level)
-response_outcome <- unique(Data_set_B$increased_contribution)
-
-# Save categorical variables as factor in a clean data set:
-clean_A <- Data_set_A %>%
+# Save categorical variables as factor:
+contiguous <- contiguous %>%
   mutate(
     condition = factor(condition,
-                levels = c("control","recommendation")),
+                       levels = c("recommendation","control")), #order matters for the contingency table
     income_level = factor(income_level,
-                   levels = c("non-LMI","LMI"))
-  )
-
-clean_B <- Data_set_B %>%
-  mutate(
+                          levels = c("non-LMI","LMI")),
     increased_contribution = factor(increased_contribution,
-                                    levels = c("1", "closed"))
+                                    levels = c("1","closed"), #order matters for the contingency table
+                                    labels = c("contributed","closed")) 
   )
-
-# Check missingness:
-summarytools::dfSummary(clean_A) #There are 1002 duplicates. There are only 1001 distinct identifiers, thus only 1001 cases, ranging from 1000 to 2000.
-summarytools::dfSummary(clean_B) #There are 751 duplicates. There are only 752 distinct identifiers, thus only 752 cases, ranging from 1457 to 2381.
-
-#Remove empty rows with NA in ALL columns:
-clean_A[rowSums(is.na(clean_A)) != ncol(clean_A), ]
-clean_B[rowSums(is.na(clean_B)) != ncol(clean_B), ]
-
-#Remove duplicate cases:
-clean_A <- distinct(clean_A)
-clean_B <- distinct(clean_B)
-
-summarytools::dfSummary(clean_A)
-#There are 2 rows with missing condition
-
-library(dplyr)
-#Remove rows with any NA in each column:
-clean_A <- Data_set_A %>% na.omit()
-
-
 ```
 ## Exploratory Data Analysis 
 https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html
+https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html
 ```{r}
+ggplot(data = contiguous) +
+  geom_count(mapping = aes(x = condition, y = increased_contribution)) 
 
-#Load Data set B.csv:
-Data_set_B <- read_csv("Data set B.csv")
-#Remove rows with NA in all columns:
-clean_B <- Data_set_B %>% na.omit()
-
-
-ggplot(data = diamonds) +
-  geom_count(mapping = aes(x = cut, y = color))
-
+ggplot(contiguous, aes(x = condition, y = increased_contribution)) + geom_point()
 ```
-```{r}
-#chr is a categorical variable with characters
-#dbl is a continuous variable with a decimal value for "double precision"
-
-
-table(clean_B$increased_contribution)
-levels(as.factor(clean_A$condition))
-
-#Merge data frames by ID variable
-contiguous <- merge(clean_A,clean_B,by="identifier")
-```
-## Clean, Transform
-```{r}
-data(nepali)
-nepali <- nepali %>%
-  # Limit to certain columns
-  select(id, sex, wt, ht, age) %>%
-  # Convert id and sex to factors
-  mutate(id = factor(id),
-         sex = factor(sex, levels = c(1, 2),
-                      labels = c("Male", "Female"))) %>%
-```
-
 ## Analysis
 
-Null Hypothesis: there is no difference in increased contributions between the control and recommendation conditions
+Null Hypothesis: There is no association between receiving a recommendation and increasing contributions. The likelihood of increased contributions is the same across the two conditions.
 
 ```{r}
-#Return the frequencies/counts of the categorical outcome by condition:
-ctab_A <- table(clean_A$condition, clean_A$income_level)
-print(ctab_A)
-summary.table(ctab_A)
+# Return the frequencies/counts of the categorical outcome by condition:
+ctab <- table(contiguous$condition, contiguous$increased_contribution)
+print(ctab) # At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate. But overall, it looks like everyone increased contributions, regardless of condition.
+summary.table(ctab) # Returns the chisq. P-value of 1 means we cannot reject the null. In other words, there is no difference in outcomes between the two conditions.
+
+fisher.test(ctab) # the odds of the control group closing (?) is almost the same (i.e., 1.3 times) as the odds of those who received a recommendation.
+
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
