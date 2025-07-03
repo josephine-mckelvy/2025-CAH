@@ -4,8 +4,9 @@ author: "Josephine McKelvy, PhD"
 date: "2025-06-30"
 output: html_document
 ---
-# Getting Started
 This R markdown file includes steps to clean and analyze fictional experimental data as part of a hiring exercise for the research analyst/behavioral researcher role at Duke University's Center for Advanced Hindsight (CAH).
+
+# Getting Started
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -28,7 +29,7 @@ if (any(installed_packages == FALSE)) {
 # Load libraries:
 lapply(packages, library, character.only = TRUE)
 ```
-## Merging, Cleaning, Transforming Data
+# Merging, Cleaning, Transforming Data
 ```{r}
 # Set working directory to load and save files:
 setwd("~/2025-CAH")
@@ -74,7 +75,7 @@ contiguous <- contiguous %>%
 # Keep the renamed variables:
 contiguous <-  subset(contiguous, select = c(identifier, condition, income, outcome))
 ```
-## Exploratory Data Analysis 
+# Exploratory Data Analysis 
 - https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html
 - https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html
 ```{r}
@@ -98,7 +99,7 @@ ggplot(data = contiguous) +
 # More non-LMI workers received the recommendation email.
 # More LMI workers received the informational (control) email.
 ```
-## Statistical Analysis
+# Statistical Analysis
 - Null Hypothesis: Treated participants (receiving a recommendation email that leverages peer information) are just as likely as control participants (receiving a generic informational email) to increase their retirement contributions.
 ```{r}
 # Descriptive Statistics: Return the frequencies/counts of the categorical outcome by condition:
@@ -125,5 +126,5 @@ itab <- table(contiguous$income, contiguous$outcome)
 stats::fisher.test(itab) 
 # Workers who were not categorized as low-to-moderate income were % more likely (than those whose household income is below 80% of the Area Median Income) to increase their TSP contribution (OR = infinity,95% CI 0.64-infinity), if these results were statistically significant.
 ```
-## Conclusion
+# Conclusion
 - On average, receiving an email prompted federal workers to increase their TSP contributions. Those who closed (their accounts?) were all employees with low-to-moderate income. There was no relationship between the type of email that workers received and their subsequent action.
