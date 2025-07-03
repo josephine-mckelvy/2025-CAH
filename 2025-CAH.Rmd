@@ -5,40 +5,50 @@ date: "2025-06-30"
 output: html_document
 ---
 # Getting Started
-This R markdown file includes steps for ...
+This R markdown file includes steps to clean and analyze fictional experimental data as part of a hiring exercise for the research analyst/behavioral researcher role at Duke University's Center for Advanced Hindsight (CAH).
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 packages <- c("DataExplorer",
               "dplyr",
+              "ggmosaic",
               "ggplot2",
               "knitr",
               "readr",
               "sjPlot",
+              "stats",
               "summarytools")
 
-# Install packages (one-time):
+# Install packages that are not already installed:
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
 
 # Load libraries:
 lapply(packages, library, character.only = TRUE)
 ```
 ## Merging, Cleaning, Transforming Data
 ```{r}
-# Load Data sets:
+# Set working directory to load and save files:
+setwd("~/2025-CAH")
+
+# Load data sets:
 Data_set_A <- readr::read_csv("Data set A.csv")
 Data_set_B <- readr::read_csv("Data set B.csv")
 
 # Review the data sets (AKA summarize the dataframes):
 summarytools::dfSummary(Data_set_A) 
-#There are 1001 distinct identifiers (thus up to 1001 real cases, ranging from 1000 to 2000 as IDs) and 1002 duplicates, making up the 2004 observations.
+#There are 1002 duplicates and 1001 distinct identifiers (thus up to 1001 real cases, ranging from 1000 to 2000 as IDs) making up the 2004 observations; not sure what that remaining blank row is.
+
 summarytools::dfSummary(Data_set_B) 
-#There are 752 distinct identifiers (thus up to 752 real cases, ranging from 1457 to 2381 as IDs) and 751 duplicates, making up the 1504 observations.
+#There are 751 duplicates and 752 distinct identifiers (thus up to 752 real cases, ranging from 1457 to 2381 as IDs) making up the 1504 observations; not sure what that remaining blank row is.
 
 # Merge data frames by ID variable, then clean that data set to reduce duplication of efforts:
 contiguous <- merge(Data_set_A, Data_set_B, by="identifier")
 summarytools::dfSummary(contiguous) 
 
-# There are multiple duplicates and 371 distinct identifiers common to both data sets, thus up to 371 cases, ranging from 1457 to 2000 as IDs, for the analytic sample. 
+# There are multiple duplicates and 371 distinct identifiers common to both data sets (thus up to 371 cases with conditions and outcomes, ranging from 1457 to 2000 as IDs) for the analytic sample. 
 
 # Remove empty rows and duplicate cases. Then summarize this dataframe again:
 contiguous <- distinct(contiguous) 
@@ -52,52 +62,68 @@ contiguous <- filter(contiguous,!is.na(condition))
 contiguous <- contiguous %>%
   mutate(
     condition = factor(condition,
-                       levels = c("recommendation","control")), #order matters for the contingency table
-    income_level = factor(income_level,
+                       levels = c("recommendation","control")), #reorder factors for the contingency table
+                      #labels = c("recommendation","informational"),
+    income = factor(income_level,
                           levels = c("non-LMI","LMI")),
-    increased_contribution = factor(increased_contribution,
-                                    levels = c("1","closed"), #order matters for the contingency table
+    outcome = factor(increased_contribution,
+                                    levels = c("1","closed"), #reorder factors for the contingency table
                                     labels = c("contributed","closed")) 
   )
+
+# Keep the renamed variables:
+contiguous <-  subset(contiguous, select = c(identifier, condition, income, outcome))
 ```
 ## Exploratory Data Analysis 
 - https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html
 - https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html
 ```{r}
 contiguousDE <- dummify(contiguous)
-DataExplorer::create_report(contiguousDE) # weak correlations between contribution, condition, income level
+DataExplorer::create_report(contiguousDE) # creates report.html output
+# weak correlations between contribution, condition, and income level
 
-ggplot2::ggplot(data = contiguous) +
-  geom_count(mapping = aes(x = condition, y = increased_contribution)) #just about everyone increased contribution
+# Create a mosaic plot (or percent stacked bar chart) of the contingency table:
+ggplot(data = contiguous) +
+  geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable
+                  divider = c("vspine","hbar"), # vspine keeps the column widths constant & hbar lets the heights vary
+                  offset = 0.02) +
+  facet_grid(~condition) +
+  scale_fill_manual(values = c("LMI"="#156082","non-LMI"="#E7EAF3")) +
+  theme(panel.background = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())+
+  labs(title = "Figure 1. Mosaic plot of income and increased contributions, by condition")
+
+# Almost all workers increased contributions, regardless of condition.
+# More non-LMI workers received the recommendation email.
+# More LMI workers received the informational (control) email.
 ```
 ## Statistical Analysis
-- Null Hypothesis: Treated participants (receiving an email that leverages peer information) are just as likely as control participants (receiving a generic informational email) to increase their retirement contributions.
+- Null Hypothesis: Treated participants (receiving a recommendation email that leverages peer information) are just as likely as control participants (receiving a generic informational email) to increase their retirement contributions.
 ```{r}
 # Descriptive Statistics: Return the frequencies/counts of the categorical outcome by condition:
-sjPlot::sjt.xtab(contiguous$increased_contribution,
+sjPlot::sjt.xtab(contiguous$outcome,
                                 contiguous$condition,
                                 title = "Table 1. Contingency Table of TSP contributions by email condition",
                                 file = "condition.doc")
 
-# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate. But overall, it looks like everyone increased contributions, regardless of condition.
+# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate than chi-square. (Neither were statistically significant.) Overall, just about everyone increased contributions, regardless of condition.
 
-ctab <- table(contiguous$condition, contiguous$increased_contribution)
-fisher.test(ctab) 
-# Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95%CI 0.09-18.65), if these results were statistically significant. 
+ctab <- table(contiguous$condition, contiguous$outcome)
+stats::fisher.test(ctab) 
+# Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95% CI 0.09-18.65), if these results were statistically significant. 
 
 # Other variables
-sjPlot::sjt.xtab(contiguous$increased_contribution,
-                                contiguous$income_level,
+sjPlot::sjt.xtab(contiguous$outcome,
+                                contiguous$income,
                                 title = "Table 2. Contingency Table of TSP contributions by income level",
                                 file = "income.doc")
 
-# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate. But overall, it looks like those who increased contributions were evenly distributed across income level.
+# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate than chi-square. (Neither were statistically significant.) Overall, those who increased contributions were evenly distributed across income level.
 
-itab <- table(contiguous$income_level, contiguous$increased_contribution)
-fisher.test(itab) 
-# Workers who were not categorized as low-to-moderate income were % more likely (than those whose household income is below 80% of the Area Median Income) to increase their TSP contribution (OR = infinity,95%CI 0.64-infinity), if these results were statistically significant.
+itab <- table(contiguous$income, contiguous$outcome)
+stats::fisher.test(itab) 
+# Workers who were not categorized as low-to-moderate income were % more likely (than those whose household income is below 80% of the Area Median Income) to increase their TSP contribution (OR = infinity,95% CI 0.64-infinity), if these results were statistically significant.
 ```
-## Graphs
-```{r}
-```
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Conclusion
+- On average, receiving an email prompted federal workers to increase their TSP contributions. Those who closed (their accounts?) were all employees with low-to-moderate income. There was no relationship between the type of email that workers received and their subsequent action.

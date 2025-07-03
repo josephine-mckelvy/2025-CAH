@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1327359/c7a00ebe8b9c4451a78edfd1d1c4190a
+bundleId: https://api.rpubs.com/api/v1/document/1327359/c7a00ebe8b9c4451a78edfd1d1c4190a
+url: http://rpubs.com/josephine-mckelvy/1327359
+version: 1
