@@ -1,35 +1,46 @@
 ---
 title: "2025-CAH"
-author: "Josephine McKelvy"
+author: "Josephine McKelvy, PhD"
 date: "2025-06-30"
 output: html_document
 ---
 # Getting Started
-This R markdown files includes steps for ...
+This R markdown file includes steps for ...
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# Install packages (one-time)
+packages <- c("DataExplorer",
+              "dplyr",
+              "ggplot2",
+              "knitr",
+              "readr",
+              "sjPlot",
+              "summarytools")
+
+# Install packages (one-time):
 
 # Load libraries:
-library(dplyr)
-library(ggplot2)
-library(knitr)
-library(readr) 
-library(summarytools)
+lapply(packages, library, character.only = TRUE)
 ```
-# Transforming, Cleaning
+## Merging, Cleaning, Transforming Data
 ```{r}
 # Load Data sets:
 Data_set_A <- readr::read_csv("Data set A.csv")
 Data_set_B <- readr::read_csv("Data set B.csv")
 
-# Merge data frames by ID variable
+# Review the data sets (AKA summarize the dataframes):
+summarytools::dfSummary(Data_set_A) 
+#There are 1001 distinct identifiers (thus up to 1001 real cases, ranging from 1000 to 2000 as IDs) and 1002 duplicates, making up the 2004 observations.
+summarytools::dfSummary(Data_set_B) 
+#There are 752 distinct identifiers (thus up to 752 real cases, ranging from 1457 to 2381 as IDs) and 751 duplicates, making up the 1504 observations.
+
+# Merge data frames by ID variable, then clean that data set to reduce duplication of efforts:
 contiguous <- merge(Data_set_A, Data_set_B, by="identifier")
 summarytools::dfSummary(contiguous) 
 
-# There are multiple duplicates and 371 distinct identifiers common to both data sets, thus up to 371 cases for the analytic sample. 
-# Remove empty rows and duplicate cases:
+# There are multiple duplicates and 371 distinct identifiers common to both data sets, thus up to 371 cases, ranging from 1457 to 2000 as IDs, for the analytic sample. 
+
+# Remove empty rows and duplicate cases. Then summarize this dataframe again:
 contiguous <- distinct(contiguous) 
 
 # There are still 3 rows with missing conditions.
@@ -37,7 +48,7 @@ contiguous <- distinct(contiguous)
 contiguous <- filter(contiguous,!is.na(condition)) 
 
 # There are 3 character (or raw text) columns (that should be factor variables) and an identifier that is a double (or real number) data type.
-# Save categorical variables as factor:
+# Save categorical variables as factor with new names for the categories:
 contiguous <- contiguous %>%
   mutate(
     condition = factor(condition,
@@ -50,27 +61,43 @@ contiguous <- contiguous %>%
   )
 ```
 ## Exploratory Data Analysis 
-https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html
-https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html
+- https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html
+- https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html
 ```{r}
-ggplot(data = contiguous) +
-  geom_count(mapping = aes(x = condition, y = increased_contribution)) 
+contiguousDE <- dummify(contiguous)
+DataExplorer::create_report(contiguousDE) # weak correlations between contribution, condition, income level
 
-ggplot(contiguous, aes(x = condition, y = increased_contribution)) + geom_point()
+ggplot2::ggplot(data = contiguous) +
+  geom_count(mapping = aes(x = condition, y = increased_contribution)) #just about everyone increased contribution
 ```
-## Analysis
-
-Null Hypothesis: There is no association between receiving a recommendation and increasing contributions. The likelihood of increased contributions is the same across the two conditions.
-
+## Statistical Analysis
+- Null Hypothesis: Treated participants (receiving an email that leverages peer information) are just as likely as control participants (receiving a generic informational email) to increase their retirement contributions.
 ```{r}
-# Return the frequencies/counts of the categorical outcome by condition:
+# Descriptive Statistics: Return the frequencies/counts of the categorical outcome by condition:
+sjPlot::sjt.xtab(contiguous$increased_contribution,
+                                contiguous$condition,
+                                title = "Table 1. Contingency Table of TSP contributions by email condition",
+                                file = "condition.doc")
+
+# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate. But overall, it looks like everyone increased contributions, regardless of condition.
+
 ctab <- table(contiguous$condition, contiguous$increased_contribution)
-print(ctab) # At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate. But overall, it looks like everyone increased contributions, regardless of condition.
-summary.table(ctab) # Returns the chisq. P-value of 1 means we cannot reject the null. In other words, there is no difference in outcomes between the two conditions.
+fisher.test(ctab) 
+# Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95%CI 0.09-18.65), if these results were statistically significant. 
 
-fisher.test(ctab) # the odds of the control group closing (?) is almost the same (i.e., 1.3 times) as the odds of those who received a recommendation.
+# Other variables
+sjPlot::sjt.xtab(contiguous$increased_contribution,
+                                contiguous$income_level,
+                                title = "Table 2. Contingency Table of TSP contributions by income level",
+                                file = "income.doc")
 
+# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate. But overall, it looks like those who increased contributions were evenly distributed across income level.
 
+itab <- table(contiguous$income_level, contiguous$increased_contribution)
+fisher.test(itab) 
+# Workers who were not categorized as low-to-moderate income were % more likely (than those whose household income is below 80% of the Area Median Income) to increase their TSP contribution (OR = infinity,95%CI 0.64-infinity), if these results were statistically significant.
 ```
-
+## Graphs
+```{r}
+```
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
