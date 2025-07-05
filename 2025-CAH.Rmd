@@ -1,20 +1,19 @@
 ---
 title: "2025-CAH"
-author: "Josephine McKelvy, PhD"
+author: "Josephine McKelvy"
 date: "2025-06-30"
-output:
-  html_document: default
-  word_document: default
-  pdf_document: default
+output: html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 This R markdown file includes steps to clean and analyze fictional experimental data as part of a hiring exercise for the research analyst/behavioral researcher role at Duke University's Center for Advanced Hindsight (CAH).
 
 # Getting Started
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
+```{r}
 packages <- c("DataExplorer",
               "dplyr",
               "ggmosaic",
@@ -88,6 +87,7 @@ contiguous <-  subset(contiguous, select = c(identifier, condition, income, outc
 
 -   <https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html>
 -   <https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html>
+-   <https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html>
 
 ```{r}
 contiguousDE <- dummify(contiguous)
@@ -119,29 +119,29 @@ ggsave(mosaic, filename = "mosaic.png")
 -   Null Hypothesis: Treated participants (receiving a recommendation email that leverages peer information) are just as likely as control participants (receiving a generic informational email) to increase their retirement contributions.
 
 ```{r}
-# Descriptive Statistics: Return the frequencies/counts of the categorical outcome by condition:
-sjPlot::sjt.xtab(contiguous$outcome,
-                                contiguous$condition,
-                                title = "Table 1. Contingency Table of TSP contributions by email condition",
-                                file = "condition.doc")
-
-# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate than chi-square. (Neither were statistically significant.) Overall, just about everyone increased contributions, regardless of condition.
-
+# Create cross-tabs of the frequencies/counts for the categorical outcome by condition:
 ctab <- table(contiguous$condition, contiguous$outcome)
-stats::fisher.test(ctab) 
-# Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95% CI 0.09-18.65), if these results were statistically significant. 
+summary.table(ctab) # Chisq = 0.08518, df = 1, p-value = 0.7704
+stats::fisher.test(ctab) # p-value = 1
+# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate than chi-square. 
+# Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95% CI 0.09-18.65), if these results were statistically significant. Overall, just about everyone increased contributions, regardless of condition.
+
+# Export the cross-tab: 
+sjPlot::sjt.xtab(contiguous$outcome, contiguous$condition,
+                 title = "Table 1. Contingency Table of TSP contributions by email condition",
+                 file = "table-condition.doc")
+
 
 # Other variables
-sjPlot::sjt.xtab(contiguous$outcome,
-                                contiguous$income,
-                                title = "Table 2. Contingency Table of TSP contributions by income level",
-                                file = "income.doc")
-
-# At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate than chi-square. (Neither were statistically significant.) Overall, those who increased contributions were evenly distributed across income level.
-
 itab <- table(contiguous$income, contiguous$outcome)
-stats::fisher.test(itab) 
-# Workers who were not categorized as low-to-moderate income were % more likely (than those whose household income is below 80% of the Area Median Income) to increase their TSP contribution (OR = infinity,95% CI 0.64-infinity), if these results were statistically significant.
+summary.table(itab) # Chisq = 3.936, df = 1, p-value = 0.04727; statistically significant but at least 2 cells have frequencies that are less than 5.
+stats::fisher.test(itab) # p-value = 0.12
+# Workers who closed (their accounts?) were categorized as low-to-moderate income.
+
+# Export the cross-tab:
+sjPlot::sjt.xtab(contiguous$outcome, contiguous$income,
+                 title = "Table 2. Contingency Table of TSP contributions by income level",
+                 file = "table-income.doc")
 ```
 
 # Conclusion
