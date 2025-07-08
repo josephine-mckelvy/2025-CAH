@@ -2,7 +2,9 @@
 title: "2025-CAH"
 author: "Josephine McKelvy"
 date: "2025-06-30"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -90,7 +92,6 @@ contiguous <-  contiguous %>%
 
 -   <https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html>
 -   <https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html>
--   <https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html>
 
 ```{r}
 contiguousDE <- dummify(contiguous)
