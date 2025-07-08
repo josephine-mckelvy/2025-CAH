@@ -23,7 +23,9 @@ packages <- c("DataExplorer",
               "sjPlot",
               "stats",
               "summarytools",
-              "tinytex")
+              "tinytex",
+              "vcd",
+              "waffle")
 
 # Install packages that are not already installed:
 installed_packages <- packages %in% rownames(installed.packages())
@@ -59,7 +61,7 @@ summarytools::dfSummary(contiguous)
 # There are multiple duplicates and 371 distinct identifiers common to both data sets (thus up to 371 cases with conditions and outcomes, ranging from 1457 to 2000 as IDs) for the analytic sample. 
 
 # Remove empty rows and duplicate cases. Then summarize this dataframe again:
-contiguous <- distinct(contiguous) 
+contiguous <- dplyr::distinct(contiguous) 
 
 # There are still 3 rows with missing conditions.
 # Keep cases where condition is not missing:
@@ -80,7 +82,8 @@ contiguous <- contiguous %>%
   )
 
 # Keep the renamed variables:
-contiguous <-  subset(contiguous, select = c(identifier, condition, income, outcome))
+contiguous <-  contiguous %>%
+  select(identifier, condition, income, outcome)
 ```
 
 # Exploratory Data Analysis
@@ -93,25 +96,130 @@ contiguous <-  subset(contiguous, select = c(identifier, condition, income, outc
 contiguousDE <- dummify(contiguous)
 DataExplorer::create_report(contiguousDE) # creates report.html output
 # weak correlations between contribution, condition, and income level
+```
+
+## Stacked Bar Chart of condition
+- https://www.cedricscherer.com/2021/07/05/a-quick-how-to-on-labelling-bar-graphs-in-ggplot2/#dataviz
+
+```{r}
+# Create the values to graph:
+condition_ct  <- table(contiguous$condition) #counts for each condition
+condition_pct <- prop.table(condition_ct)    #percentages for each condition
+condition_tab <- data.frame(condition_ct,condition_pct)
+condition_tab <- condition_tab %>%
+  rename(condition = Var1, count = Freq, percent = Freq.1) %>%
+  select(condition, count, percent) %>%
+  arrange(percent)
+
+# Plot:
+bar_plot <- ggplot(condition_tab, aes(x = percent, y = condition)) %>% +
+  geom_col(fill = "#156082", width = .75, show.legend = FALSE) +
+  geom_text(aes(label = paste(round(percent*100),"%")), position = position_dodge(width = 1), hjust = -0.5) +
+  theme_void() +
+  theme(axis.ticks = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 14, hjust = 1)) +
+  labs(title = "Figure 1. Stacked bar chart of conditions") 
+
+# Save plot:
+ggsave(bar_plot, filename = "plot-bar.png", height = 4, width = 12)
+```
+
+## Donut chart of income
+(not sure why geom_rect didn't work but geom_col did):
+- https://r-charts.com/part-whole/donut-chart-ggplot2/
+- https://rfortherestofus.com/2022/09/how-to-make-a-donut-chart-in-ggplot
+
+```{r}
+# Create the values to graph:
+# https://r-graph-gallery.com/128-ring-or-donut-plot.html
+income_ct  <-  table(contiguous$income) #counts for each income level
+income_pct <-  prop.table(income_ct)    #percentages for each income level
+income_ymax <- cumsum(income_pct)       #cumulative percentages of each income level
+income_ymin <- c(0, head(income_ymax, n = -1))
+  
+donut_tab <- data.frame(income_ct, income_pct,income_ymax,income_ymin)
+donut_tab <- donut_tab %>%
+  rename(income = Var1, count = Freq, percent = Freq.1) %>%
+  select(income, count, percent, income_ymax, income_ymin)
+
+# Plot:
+hsize <- 4 # 1=small hole size & thick donut, 10=large hole size & thin donut
+
+donut_tab <- donut_tab %>% 
+  mutate(x = hsize)
+
+donut_plot <- ggplot(donut_tab, aes(x = hsize, y = percent, fill = income)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = paste(round(percent*100), "% ", income)), position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = "y",      # A donut chart is a bar chart with polar coordinates. 
+              direction = -1) + # Set the direction to -1 so the filled in part starts at the top and goes clockwise.
+  xlim(c(0.2, hsize + 0.5)) +
+  scale_fill_manual(values = c("LMI"="#156082","non-LMI"="#E7EAF3")) +
+  theme_void() # Removes grid lines and background +
+  labs(title = "Figure 2. Donut chart of income levels")
+
+# Save plot:
+ggsave(donut_plot, filename = "plot-donut.png")
+```
+
+## Waffle Chart of action
+- https://r-charts.com/part-whole/waffle-chart-ggplot2/#geom-waffle
+
+```{r}
+# Create the values to graph:
+waffle_ct  <-  table(contiguous$outcome)   #counts for each outcome
+waffle_pct <-  prop.table(waffle_ct) * 100 #percentages for each outcome to standardize to a 10x10 grid plot
+
+# Plot:
+waffle_plot <- waffle(waffle_pct, rows = 10,
+       colors = c("contributed"="#156082","closed"="#E7EAF3"),
+       legend_pos = "none")
+
+# Save plot:
+ggsave(waffle_plot, filename = "plot-waffle.png") 
+```
+
+## Mosaic Plot of the action by condition and income
+- https://rstudio-pubs-static.s3.amazonaws.com/584765_5ab02919bd374db7ad7c58f20a11e86f.html
+- https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html
+
+```{r}
+# Optional: Create values for labels:
+mosaic_ct <- table(contiguous$income, contiguous$condition, contiguous$outcome)
+mosaic_pct <- prop.table(mosaic_ct)
+mosaic_tab <- data.frame(mosaic_ct,mosaic_pct)
+mosaic_tab <- mosaic_tab %>%
+  rename(income = Var1, 
+         condition = Var2, 
+         outcome = Var3, 
+         conditionXincome = Freq) %>%
+  select(income, condition, outcome, conditionXincome)
 
 # Create a mosaic plot (or percent stacked bar chart) of the contingency table:
-mosaic <- ggplot(data = contiguous) +
-  geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable
-                  divider = c("vspine","hbar"), # vspine keeps the column widths constant & hbar lets the heights vary
+ggsave(filename = "plot-mosaic_1.png",
+       mosaic_1 <- ggplot(data = contiguous) +
+         ggmosaic::geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable                  divider = c("vspine","hbar"), # vspine keeps the column widths constant & hbar lets the heights vary
                   offset = 0.02) +
-  facet_grid(~condition) +
-  scale_fill_manual(values = c("LMI"="#156082","non-LMI"="#E7EAF3")) +
-  theme(panel.background = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())+
-  labs(title = "Figure 1. Mosaic plot of income and increased contributions, by condition")
+         facet_grid(~condition) +
+         scale_fill_manual(values = c("LMI"="#156082","non-LMI"="#E7EAF3")) +
+         #theme_void() +
+         theme(panel.background = element_blank(),
+               axis.text.y = element_blank(),
+               axis.ticks.y = element_blank()) +
+         labs(title = "Figure 4. Mosaic plot of income and increased contributions, by condition"))
 
 # Almost all workers increased contributions, regardless of condition.
 # More non-LMI workers received the recommendation email.
 # More LMI workers received the informational (control) email.
 
-# Save plot:
-ggsave(mosaic, filename = "mosaic.png")
+# Create and save a mosaic plot with Pearson residuals:
+jpeg(filename = "plot-Mosaic_2.png")
+mosaic_2 <- vcd::mosaic(~ outcome + condition + income, 
+                        data = contiguous, 
+                        main = "Retirement contributions by condition and income", 
+                        shade = TRUE, legend = TRUE)
+# Statistically (but not substantively) significant correlations
 ```
 
 # Statistical Analysis
@@ -122,28 +230,28 @@ ggsave(mosaic, filename = "mosaic.png")
 # Create cross-tabs of the frequencies/counts for the categorical outcome by condition:
 ctab <- table(contiguous$condition, contiguous$outcome)
 summary.table(ctab) # Chisq = 0.08518, df = 1, p-value = 0.7704
-stats::fisher.test(ctab) # p-value = 1
 # At least 2 cells have frequencies that are less than 5, so a Fisher's exact test may be more appropriate than chi-square. 
+stats::fisher.test(ctab) # p-value = 1
 # Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95% CI 0.09-18.65), if these results were statistically significant. Overall, just about everyone increased contributions, regardless of condition.
 
 # Export the cross-tab: 
 sjPlot::sjt.xtab(contiguous$outcome, contiguous$condition,
-                 title = "Table 1. Contingency Table of TSP contributions by email condition",
+                 title = "Table 1. Contingency table of contributions by email condition",
                  file = "table-condition.doc")
 
-
-# Other variables
+# Explore other variables:
 itab <- table(contiguous$income, contiguous$outcome)
-summary.table(itab) # Chisq = 3.936, df = 1, p-value = 0.04727; statistically significant but at least 2 cells have frequencies that are less than 5.
+summary.table(itab) # Chisq = 3.936, df = 1, p-value = 0.04727
+# statistically significant but at least 2 cells have frequencies that are less than 5.
 stats::fisher.test(itab) # p-value = 0.12
 # Workers who closed (their accounts?) were categorized as low-to-moderate income.
 
 # Export the cross-tab:
 sjPlot::sjt.xtab(contiguous$outcome, contiguous$income,
-                 title = "Table 2. Contingency Table of TSP contributions by income level",
+                 title = "Table 2. Contingency table of contributions by income level",
                  file = "table-income.doc")
 ```
 
 # Conclusion
 
--   On average, receiving an email prompted federal workers to increase their TSP contributions. Those who closed (their accounts?) were all employees with low-to-moderate income. There was no relationship between the type of email that workers received and their subsequent action.
+-   On average, receiving an email prompted federal workers to increase their retirement contributions. Those who closed (their accounts?) were all employees with low-to-moderate income. There was no relationship between the type of email that employees received and their subsequent action.

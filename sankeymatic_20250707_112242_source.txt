@@ -1,0 +1,83 @@
+// SankeyMATIC diagram inputs - Saved: 7/7/2025, 11:22:42 AM
+// https://sankeymatic.com/build/
+
+// === Nodes and Flows ===
+
+// Sample Ranked Election diagram
+
+:LMI #19398A
+:non-LMI #E7EAF3
+:Recommendation #3E8853
+:Control #edc949
+:No demographics #d9d9d9
+:N/A condition #d9d9d9
+:Closed #19398A
+:Contributed #E7EAF3
+
+LMI [251] Recommendation
+LMI [261] Control
+LMI [2] N/A condition
+non-LMI [240] Recommendation
+non-LMI [247] Control
+
+N/A condition [2] Contributed
+Recommendation [2] Closed
+Control [2] Closed
+
+Recommendation [209] Contributed
+Control [156] Contributed
+No demographics [381] Contributed
+
+// === Settings ===
+
+size w 900
+  h 400
+margin l 12
+  r 12
+  t 18
+  b 20
+bg color #ffffff
+  transparent Y
+node w 40
+  h 75
+  spacing 100
+  border 0
+  theme b
+  color #888888
+  opacity 1
+flow curvature 0.42
+  inheritfrom source
+  color #999999
+  opacity 0.6
+layout order automatic
+  justifyorigins N
+  justifyends N
+  reversegraph N
+  attachincompletesto nearest
+labels color #000000
+  hide N
+  highlight 0.8
+  fontface sans-serif
+  linespacing 0.1
+  relativesize 95
+  magnify 124
+labelname appears Y
+  size 18
+  weight 400
+labelvalue appears Y
+  fullprecision Y
+  position above
+  weight 400
+labelposition autoalign 0
+  scheme auto
+  first before
+  breakpoint 4
+value format ',.'
+  prefix ''
+  suffix ''
+themeoffset a 9
+  b 0
+  c 0
+  d 0
+meta mentionsankeymatic Y
+  listimbalances Y

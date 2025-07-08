@@ -372,7 +372,9 @@ Advanced Hindsight (CAH).</p>
               &quot;sjPlot&quot;,
               &quot;stats&quot;,
               &quot;summarytools&quot;,
-              &quot;tinytex&quot;)
+              &quot;tinytex&quot;,
+              &quot;vcd&quot;,
+              &quot;waffle&quot;)
 
 # Install packages that are not already installed:
 installed_packages &lt;- packages %in% rownames(installed.packages())
@@ -391,6 +393,13 @@ lapply(packages, library, character.only = TRUE)</code></pre>
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Learn more about sjPlot with &#39;browseVignettes(&quot;sjPlot&quot;)&#39;.</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre><code>## 
+## Attaching package: &#39;vcd&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:ggmosaic&#39;:
+## 
+##     mosaic, spine</code></pre>
 <pre><code>## [[1]]
 ## [1] &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;       
 ## [6] &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
@@ -438,7 +447,19 @@ lapply(packages, library, character.only = TRUE)</code></pre>
 ##  [1] &quot;tinytex&quot;      &quot;summarytools&quot; &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;       
 ##  [6] &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;       
 ## [11] &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;     
-## [16] &quot;base&quot;</code></pre>
+## [16] &quot;base&quot;        
+## 
+## [[11]]
+##  [1] &quot;vcd&quot;          &quot;grid&quot;         &quot;tinytex&quot;      &quot;summarytools&quot; &quot;sjPlot&quot;      
+##  [6] &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;       
+## [11] &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;       
+## [16] &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
+## 
+## [[12]]
+##  [1] &quot;waffle&quot;       &quot;vcd&quot;          &quot;grid&quot;         &quot;tinytex&quot;      &quot;summarytools&quot;
+##  [6] &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;     
+## [11] &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;   
+## [16] &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;</code></pre>
 </div>
 <div id="merging-cleaning-transforming-data" class="section level1">
 <h1>Merging, Cleaning, Transforming Data</h1>
@@ -537,7 +558,7 @@ summarytools::dfSummary(contiguous) </code></pre>
 <pre class="r"><code># There are multiple duplicates and 371 distinct identifiers common to both data sets (thus up to 371 cases with conditions and outcomes, ranging from 1457 to 2000 as IDs) for the analytic sample. 
 
 # Remove empty rows and duplicate cases. Then summarize this dataframe again:
-contiguous &lt;- distinct(contiguous) 
+contiguous &lt;- dplyr::distinct(contiguous) 
 
 # There are still 3 rows with missing conditions.
 # Keep cases where condition is not missing:
@@ -558,7 +579,8 @@ contiguous &lt;- contiguous %&gt;%
   )
 
 # Keep the renamed variables:
-contiguous &lt;-  subset(contiguous, select = c(identifier, condition, income, outcome))</code></pre>
+contiguous &lt;-  contiguous %&gt;%
+  select(identifier, condition, income, outcome)</code></pre>
 </div>
 <div id="exploratory-data-analysis" class="section level1">
 <h1>Exploratory Data Analysis</h1>
@@ -580,29 +602,124 @@ DataExplorer::create_report(contiguousDE) # creates report.html output</code></p
 <pre><code>##   |                                             |...........................          |  74%                                   |                                             |............................         |  76% [principal_component_analysis]</code></pre>
 <pre><code>##   |                                             |.............................        |  79%                                   |                                             |..............................       |  81% [bivariate_distribution_header]   |                                             |...............................      |  83%                                   |                                             |................................     |  86% [plot_response_boxplot]           |                                             |.................................    |  88%                                   |                                             |.................................    |  90% [plot_by_boxplot]                 |                                             |..................................   |  93%                                   |                                             |...................................  |  95% [plot_response_scatterplot]       |                                             |.................................... |  98%                                   |                                             |.....................................| 100% [plot_by_scatterplot]           </code></pre>
 <pre><code>## output file: C:/Users/josep/Documents/2025-CAH/report.knit.md</code></pre>
-<pre><code>## &quot;C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/pandoc&quot; +RTS -K512m -RTS &quot;C:\Users\josep\Documents\2025-CAH\report.knit.md&quot; --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc7f4c2bbd4c58.html --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\pagebreak.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\latex-div.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\table-classes.lua&quot; --embed-resources --standalone --variable bs3=TRUE --section-divs --table-of-contents --toc-depth 6 --template &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmd\h\default.html&quot; --no-highlight --variable highlightjs=1 --variable theme=yeti --mathjax --variable &quot;mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; --include-in-header &quot;C:\Users\josep\AppData\Local\Temp\RtmpghVdJc\rmarkdown-str7f4c7051dea.html&quot;</code></pre>
+<pre><code>## &quot;C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/pandoc&quot; +RTS -K512m -RTS &quot;C:\Users\josep\Documents\2025-CAH\report.knit.md&quot; --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc9da816057359.html --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\pagebreak.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\latex-div.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\table-classes.lua&quot; --embed-resources --standalone --variable bs3=TRUE --section-divs --table-of-contents --toc-depth 6 --template &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmd\h\default.html&quot; --no-highlight --variable highlightjs=1 --variable theme=yeti --mathjax --variable &quot;mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; --include-in-header &quot;C:\Users\josep\AppData\Local\Temp\RtmpeM2vqO\rmarkdown-str9da873952369.html&quot;</code></pre>
 <pre><code>## 
 ## Output created: report.html</code></pre>
-<pre class="r"><code># weak correlations between contribution, condition, and income level
+<pre class="r"><code># weak correlations between contribution, condition, and income level</code></pre>
+<div id="stacked-bar-chart-of-condition" class="section level2">
+<h2>Stacked Bar Chart of condition</h2>
+<ul>
+<li><a href="https://www.cedricscherer.com/2021/07/05/a-quick-how-to-on-labelling-bar-graphs-in-ggplot2/#dataviz" class="uri">https://www.cedricscherer.com/2021/07/05/a-quick-how-to-on-labelling-bar-graphs-in-ggplot2/#dataviz</a></li>
+</ul>
+<pre class="r"><code># Create the values to graph:
+condition_ct  &lt;- table(contiguous$condition) #counts for each condition
+condition_pct &lt;- prop.table(condition_ct)    #percentages for each condition
+condition_tab &lt;- data.frame(condition_ct,condition_pct)
+condition_tab &lt;- condition_tab %&gt;%
+  rename(condition = Var1, count = Freq, percent = Freq.1) %&gt;%
+  select(condition, count, percent) %&gt;%
+  arrange(percent)
 
-# Create a mosaic plot (or percent stacked bar chart) of the contingency table:
-mosaic &lt;- ggplot(data = contiguous) +
-  geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable
-                  divider = c(&quot;vspine&quot;,&quot;hbar&quot;), # vspine keeps the column widths constant &amp; hbar lets the heights vary
-                  offset = 0.02) +
-  facet_grid(~condition) +
-  scale_fill_manual(values = c(&quot;LMI&quot;=&quot;#156082&quot;,&quot;non-LMI&quot;=&quot;#E7EAF3&quot;)) +
-  theme(panel.background = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())+
-  labs(title = &quot;Figure 1. Mosaic plot of income and increased contributions, by condition&quot;)
-
-# Almost all workers increased contributions, regardless of condition.
-# More non-LMI workers received the recommendation email.
-# More LMI workers received the informational (control) email.
+# Plot:
+bar_plot &lt;- ggplot(condition_tab, aes(x = percent, y = condition)) %&gt;% +
+  geom_col(fill = &quot;#156082&quot;, width = .75, show.legend = FALSE) +
+  geom_text(aes(label = paste(round(percent*100),&quot;%&quot;)), position = position_dodge(width = 1), hjust = -0.5) +
+  theme_void() +
+  theme(axis.ticks = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 14, hjust = 1)) +
+  labs(title = &quot;Figure 1. Stacked bar chart of conditions&quot;) 
 
 # Save plot:
-ggsave(mosaic, filename = &quot;mosaic.png&quot;)</code></pre>
+ggsave(bar_plot, filename = &quot;plot-bar.png&quot;, height = 4, width = 12)</code></pre>
+</div>
+<div id="donut-chart-of-income" class="section level2">
+<h2>Donut chart of income</h2>
+<p>(not sure why geom_rect didn’t work but geom_col did): - <a href="https://r-charts.com/part-whole/donut-chart-ggplot2/" class="uri">https://r-charts.com/part-whole/donut-chart-ggplot2/</a> -
+<a href="https://rfortherestofus.com/2022/09/how-to-make-a-donut-chart-in-ggplot" class="uri">https://rfortherestofus.com/2022/09/how-to-make-a-donut-chart-in-ggplot</a></p>
+<pre class="r"><code># Create the values to graph:
+# https://r-graph-gallery.com/128-ring-or-donut-plot.html
+income_ct  &lt;-  table(contiguous$income) #counts for each income level
+income_pct &lt;-  prop.table(income_ct)    #percentages for each income level
+income_ymax &lt;- cumsum(income_pct)       #cumulative percentages of each income level
+income_ymin &lt;- c(0, head(income_ymax, n = -1))
+  
+donut_tab &lt;- data.frame(income_ct, income_pct,income_ymax,income_ymin)
+donut_tab &lt;- donut_tab %&gt;%
+  rename(income = Var1, count = Freq, percent = Freq.1) %&gt;%
+  select(income, count, percent, income_ymax, income_ymin)
+
+# Plot:
+hsize &lt;- 4 # 1=small hole size &amp; thick donut, 10=large hole size &amp; thin donut
+
+donut_tab &lt;- donut_tab %&gt;% 
+  mutate(x = hsize)
+
+donut_plot &lt;- ggplot(donut_tab, aes(x = hsize, y = percent, fill = income)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = paste(round(percent*100), &quot;% &quot;, income)), position = position_stack(vjust = 0.5)) +
+  coord_polar(theta = &quot;y&quot;,      # A donut chart is a bar chart with polar coordinates. 
+              direction = -1) + # Set the direction to -1 so the filled in part starts at the top and goes clockwise.
+  xlim(c(0.2, hsize + 0.5)) +
+  scale_fill_manual(values = c(&quot;LMI&quot;=&quot;#156082&quot;,&quot;non-LMI&quot;=&quot;#E7EAF3&quot;)) +
+  theme_void() # Removes grid lines and background +
+  labs(title = &quot;Figure 2. Donut chart of income levels&quot;)</code></pre>
+<pre><code>## $title
+## [1] &quot;Figure 2. Donut chart of income levels&quot;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;labels&quot;</code></pre>
+<pre class="r"><code># Save plot:
+ggsave(donut_plot, filename = &quot;plot-donut.png&quot;)</code></pre>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+</div>
+<div id="waffle-chart-of-action" class="section level2">
+<h2>Waffle Chart of action</h2>
+<ul>
+<li><a href="https://r-charts.com/part-whole/waffle-chart-ggplot2/#geom-waffle" class="uri">https://r-charts.com/part-whole/waffle-chart-ggplot2/#geom-waffle</a></li>
+</ul>
+<pre class="r"><code># Create the values to graph:
+waffle_ct  &lt;-  table(contiguous$outcome)   #counts for each outcome
+waffle_pct &lt;-  prop.table(waffle_ct) * 100 #percentages for each outcome to standardize to a 10x10 grid plot
+
+# Plot:
+waffle_plot &lt;- waffle(waffle_pct, rows = 10,
+       colors = c(&quot;contributed&quot;=&quot;#156082&quot;,&quot;closed&quot;=&quot;#E7EAF3&quot;),
+       legend_pos = &quot;none&quot;)
+
+# Save plot:
+ggsave(waffle_plot, filename = &quot;plot-waffle.png&quot;) </code></pre>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+</div>
+<div id="mosaic-plot-of-the-action-by-condition-and-income" class="section level2">
+<h2>Mosaic Plot of the action by condition and income</h2>
+<ul>
+<li><a href="https://rstudio-pubs-static.s3.amazonaws.com/584765_5ab02919bd374db7ad7c58f20a11e86f.html" class="uri">https://rstudio-pubs-static.s3.amazonaws.com/584765_5ab02919bd374db7ad7c58f20a11e86f.html</a></li>
+<li><a href="https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html" class="uri">https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html</a></li>
+</ul>
+<pre class="r"><code># Optional: Create values for labels:
+mosaic_ct &lt;- table(contiguous$income, contiguous$condition, contiguous$outcome)
+mosaic_pct &lt;- prop.table(mosaic_ct)
+mosaic_tab &lt;- data.frame(mosaic_ct,mosaic_pct)
+mosaic_tab &lt;- mosaic_tab %&gt;%
+  rename(income = Var1, 
+         condition = Var2, 
+         outcome = Var3, 
+         conditionXincome = Freq) %&gt;%
+  select(income, condition, outcome, conditionXincome)
+
+# Create a mosaic plot (or percent stacked bar chart) of the contingency table:
+ggsave(filename = &quot;plot-mosaic_1.png&quot;,
+       mosaic_1 &lt;- ggplot(data = contiguous) +
+         ggmosaic::geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable                  divider = c(&quot;vspine&quot;,&quot;hbar&quot;), # vspine keeps the column widths constant &amp; hbar lets the heights vary
+                  offset = 0.02) +
+         facet_grid(~condition) +
+         scale_fill_manual(values = c(&quot;LMI&quot;=&quot;#156082&quot;,&quot;non-LMI&quot;=&quot;#E7EAF3&quot;)) +
+         #theme_void() +
+         theme(panel.background = element_blank(),
+               axis.text.y = element_blank(),
+               axis.ticks.y = element_blank()) +
+         labs(title = &quot;Figure 4. Mosaic plot of income and increased contributions, by condition&quot;))</code></pre>
 <pre><code>## Saving 7 x 5 in image</code></pre>
 <pre><code>## Warning: The `scale_name` argument of `continuous_scale()` is deprecated as of ggplot2
 ## 3.5.0.
@@ -621,6 +738,18 @@ ggsave(mosaic, filename = &quot;mosaic.png&quot;)</code></pre>
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 ## generated.</code></pre>
+<pre class="r"><code># Almost all workers increased contributions, regardless of condition.
+# More non-LMI workers received the recommendation email.
+# More LMI workers received the informational (control) email.
+
+# Create and save a mosaic plot with Pearson residuals:
+jpeg(filename = &quot;plot-Mosaic_2.png&quot;)
+mosaic_2 &lt;- vcd::mosaic(~ outcome + condition + income, 
+                        data = contiguous, 
+                        main = &quot;Retirement contributions by condition and income&quot;, 
+                        shade = TRUE, legend = TRUE)
+# Statistically (but not substantively) significant correlations</code></pre>
+</div>
 </div>
 <div id="statistical-analysis" class="section level1">
 <h1>Statistical Analysis</h1>
@@ -638,7 +767,8 @@ summary.table(ctab) # Chisq = 0.08518, df = 1, p-value = 0.7704</code></pre>
 ## Test for independence of all factors:
 ##  Chisq = 0.08518, df = 1, p-value = 0.7704
 ##  Chi-squared approximation may be incorrect</code></pre>
-<pre class="r"><code>stats::fisher.test(ctab) # p-value = 1</code></pre>
+<pre class="r"><code># At least 2 cells have frequencies that are less than 5, so a Fisher&#39;s exact test may be more appropriate than chi-square. 
+stats::fisher.test(ctab) # p-value = 1</code></pre>
 <pre><code>## 
 ##  Fisher&#39;s Exact Test for Count Data
 ## 
@@ -650,16 +780,15 @@ summary.table(ctab) # Chisq = 0.08518, df = 1, p-value = 0.7704</code></pre>
 ## sample estimates:
 ## odds ratio 
 ##   1.338652</code></pre>
-<pre class="r"><code># At least 2 cells have frequencies that are less than 5, so a Fisher&#39;s exact test may be more appropriate than chi-square. 
-# Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95% CI 0.09-18.65), if these results were statistically significant. Overall, just about everyone increased contributions, regardless of condition.
+<pre class="r"><code># Workers who received the recommendation email were 34% more likely (than those who received the informational email) to increase their TSP contribution (OR = 1.338,95% CI 0.09-18.65), if these results were statistically significant. Overall, just about everyone increased contributions, regardless of condition.
 
 # Export the cross-tab: 
 sjPlot::sjt.xtab(contiguous$outcome, contiguous$condition,
-                 title = &quot;Table 1. Contingency Table of TSP contributions by email condition&quot;,
+                 title = &quot;Table 1. Contingency table of contributions by email condition&quot;,
                  file = &quot;table-condition.doc&quot;)</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">
-Table 1. Contingency Table of TSP contributions by email condition
+Table 1. Contingency table of contributions by email condition
 </caption>
 <tr>
 <th style="border-top:double; text-align:center; font-style:italic; font-weight:normal; border-bottom:1px solid;" rowspan="2">
@@ -727,15 +856,16 @@ Total
 </td>
 </tr>
 </table>
-<pre class="r"><code># Other variables
+<pre class="r"><code># Explore other variables:
 itab &lt;- table(contiguous$income, contiguous$outcome)
-summary.table(itab) # Chisq = 3.936, df = 1, p-value = 0.04727; statistically significant but at least 2 cells have frequencies that are less than 5.</code></pre>
+summary.table(itab) # Chisq = 3.936, df = 1, p-value = 0.04727</code></pre>
 <pre><code>## Number of cases in table: 369 
 ## Number of factors: 2 
 ## Test for independence of all factors:
 ##  Chisq = 3.936, df = 1, p-value = 0.04727
 ##  Chi-squared approximation may be incorrect</code></pre>
-<pre class="r"><code>stats::fisher.test(itab) # p-value = 0.12</code></pre>
+<pre class="r"><code># statistically significant but at least 2 cells have frequencies that are less than 5.
+stats::fisher.test(itab) # p-value = 0.12</code></pre>
 <pre><code>## 
 ##  Fisher&#39;s Exact Test for Count Data
 ## 
@@ -751,11 +881,11 @@ summary.table(itab) # Chisq = 3.936, df = 1, p-value = 0.04727; statistically si
 
 # Export the cross-tab:
 sjPlot::sjt.xtab(contiguous$outcome, contiguous$income,
-                 title = &quot;Table 2. Contingency Table of TSP contributions by income level&quot;,
+                 title = &quot;Table 2. Contingency table of contributions by income level&quot;,
                  file = &quot;table-income.doc&quot;)</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">
-Table 2. Contingency Table of TSP contributions by income level
+Table 2. Contingency table of contributions by income level
 </caption>
 <tr>
 <th style="border-top:double; text-align:center; font-style:italic; font-weight:normal; border-bottom:1px solid;" rowspan="2">
@@ -828,9 +958,9 @@ Total
 <h1>Conclusion</h1>
 <ul>
 <li>On average, receiving an email prompted federal workers to increase
-their TSP contributions. Those who closed (their accounts?) were all
-employees with low-to-moderate income. There was no relationship between
-the type of email that workers received and their subsequent
+their retirement contributions. Those who closed (their accounts?) were
+all employees with low-to-moderate income. There was no relationship
+between the type of email that employees received and their subsequent
 action.</li>
 </ul>
 </div>
