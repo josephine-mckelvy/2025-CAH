@@ -215,7 +215,7 @@ ggsave(filename = "plot-mosaic_1.png",
 # More LMI workers received the informational (control) email.
 
 # Create and save a mosaic plot with Pearson residuals:
-jpeg(filename = "plot-Mosaic_2.png")
+jpeg(filename = "plot-mosaic_2.png")
 mosaic_2 <- vcd::mosaic(~ outcome + condition + income, 
                         data = contiguous, 
                         main = "Retirement contributions by condition and income", 
