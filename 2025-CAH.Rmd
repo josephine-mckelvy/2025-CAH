@@ -2,9 +2,7 @@
 title: "2025-CAH"
 author: "Josephine McKelvy"
 date: "2025-06-30"
-output:
-  pdf_document: default
-  html_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
