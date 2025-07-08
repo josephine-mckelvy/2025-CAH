@@ -199,7 +199,8 @@ mosaic_tab <- mosaic_tab %>%
 # Create a mosaic plot (or percent stacked bar chart) of the contingency table:
 ggsave(filename = "plot-mosaic_1.png",
        mosaic_1 <- ggplot(data = contiguous) +
-         ggmosaic::geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable                  divider = c("vspine","hbar"), # vspine keeps the column widths constant & hbar lets the heights vary
+         ggmosaic::geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable
+                  divider = c("vspine","hbar"), # vspine keeps the column widths constant & hbar lets the heights vary
                   offset = 0.02) +
          facet_grid(~condition) +
          scale_fill_manual(values = c("LMI"="#156082","non-LMI"="#E7EAF3")) +

@@ -1,5 +1,5 @@
 <table style="border-collapse:collapse; border:none;">
-<caption style="font-weight: bold; text-align:left;">Table 1. Contingency Table of TSP contributions by email condition</caption>
+<caption style="font-weight: bold; text-align:left;">Table 1. Contingency table of contributions by email condition</caption>
  <tr>
  <th style="border-top:double; text-align:center; font-style:italic; font-weight:normal; border-bottom:1px solid;" rowspan="2">outcome</th>
  <th style="border-top:double; text-align:center; font-style:italic; font-weight:normal;" colspan="2">condition</th>
