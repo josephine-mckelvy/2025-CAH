@@ -365,6 +365,7 @@ Advanced Hindsight (CAH).</p>
 <h1>Getting Started</h1>
 <pre class="r"><code>packages &lt;- c(&quot;DataExplorer&quot;,
               &quot;dplyr&quot;,
+              &quot;ggalluvial&quot;,
               &quot;ggmosaic&quot;,
               &quot;ggplot2&quot;,
               &quot;knitr&quot;,
@@ -393,6 +394,7 @@ lapply(packages, library, character.only = TRUE)</code></pre>
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Learn more about sjPlot with &#39;browseVignettes(&quot;sjPlot&quot;)&#39;.</code></pre>
 <pre><code>## Loading required package: grid</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;vcd&#39;</code></pre>
@@ -408,60 +410,69 @@ lapply(packages, library, character.only = TRUE)</code></pre>
 ## [6] &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[3]]
-##  [1] &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;       
+##  [1] &quot;ggalluvial&quot;   &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;       
 ##  [6] &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;     
 ## [11] &quot;base&quot;        
 ## 
 ## [[4]]
-##  [1] &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;       
-##  [6] &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;     
-## [11] &quot;base&quot;        
+##  [1] &quot;ggmosaic&quot;     &quot;ggalluvial&quot;   &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot;
+##  [6] &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;    
+## [11] &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[5]]
-##  [1] &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot;
+##  [1] &quot;ggmosaic&quot;     &quot;ggalluvial&quot;   &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot;
 ##  [6] &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;    
 ## [11] &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[6]]
-##  [1] &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;       
+##  [1] &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggalluvial&quot;   &quot;ggplot2&quot;      &quot;dplyr&quot;       
 ##  [6] &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;       
 ## [11] &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[7]]
-##  [1] &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;     
+##  [1] &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggalluvial&quot;   &quot;ggplot2&quot;     
 ##  [6] &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;   
 ## [11] &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[8]]
-##  [1] &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;     
-##  [6] &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;   
-## [11] &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
+##  [1] &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggalluvial&quot;  
+##  [6] &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;    
+## [11] &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[9]]
-##  [1] &quot;summarytools&quot; &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;    
+##  [1] &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggalluvial&quot;  
 ##  [6] &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;    
 ## [11] &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[10]]
-##  [1] &quot;tinytex&quot;      &quot;summarytools&quot; &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;       
-##  [6] &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;       
+##  [1] &quot;summarytools&quot; &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;    
+##  [6] &quot;ggalluvial&quot;   &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;       
 ## [11] &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;     
 ## [16] &quot;base&quot;        
 ## 
 ## [[11]]
-##  [1] &quot;vcd&quot;          &quot;grid&quot;         &quot;tinytex&quot;      &quot;summarytools&quot; &quot;sjPlot&quot;      
-##  [6] &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;      &quot;dplyr&quot;       
-## [11] &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;       
-## [16] &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
+##  [1] &quot;tinytex&quot;      &quot;summarytools&quot; &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;       
+##  [6] &quot;ggmosaic&quot;     &quot;ggalluvial&quot;   &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot;
+## [11] &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;    
+## [16] &quot;methods&quot;      &quot;base&quot;        
 ## 
 ## [[12]]
-##  [1] &quot;waffle&quot;       &quot;vcd&quot;          &quot;grid&quot;         &quot;tinytex&quot;      &quot;summarytools&quot;
-##  [6] &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggplot2&quot;     
+##  [1] &quot;vcd&quot;          &quot;grid&quot;         &quot;tinytex&quot;      &quot;summarytools&quot; &quot;sjPlot&quot;      
+##  [6] &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggalluvial&quot;   &quot;ggplot2&quot;     
 ## [11] &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;     &quot;grDevices&quot;   
-## [16] &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;</code></pre>
+## [16] &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;        
+## 
+## [[13]]
+##  [1] &quot;waffle&quot;       &quot;vcd&quot;          &quot;grid&quot;         &quot;tinytex&quot;      &quot;summarytools&quot;
+##  [6] &quot;sjPlot&quot;       &quot;readr&quot;        &quot;knitr&quot;        &quot;ggmosaic&quot;     &quot;ggalluvial&quot;  
+## [11] &quot;ggplot2&quot;      &quot;dplyr&quot;        &quot;DataExplorer&quot; &quot;stats&quot;        &quot;graphics&quot;    
+## [16] &quot;grDevices&quot;    &quot;utils&quot;        &quot;datasets&quot;     &quot;methods&quot;      &quot;base&quot;</code></pre>
 </div>
 <div id="merging-cleaning-transforming-data" class="section level1">
 <h1>Merging, Cleaning, Transforming Data</h1>
+<ul>
+<li><a href="https://www.infoworld.com/article/2264570/how-to-merge-data-in-r-using-r-merge-dplyr-or-datatable.html" class="uri">https://www.infoworld.com/article/2264570/how-to-merge-data-in-r-using-r-merge-dplyr-or-datatable.html</a></li>
+</ul>
 <pre class="r"><code># Set working directory to load and save files:
 setwd(&quot;~/2025-CAH&quot;)
 
@@ -529,30 +540,37 @@ summarytools::dfSummary(Data_set_B) </code></pre>
 <pre class="r"><code>#There are 751 duplicates and 752 distinct identifiers (thus up to 752 real cases, ranging from 1457 to 2381 as IDs) making up the 1504 observations; not sure what that remaining blank row is.
 
 # Merge data frames by ID variable, then clean that data set to reduce duplication of efforts:
-contiguous &lt;- merge(Data_set_A, Data_set_B, by=&quot;identifier&quot;)
-summarytools::dfSummary(contiguous) </code></pre>
+#contiguous &lt;- merge(Data_set_A, Data_set_B, by = &quot;identifier&quot;) #inner
+#contiguous &lt;- merge(Data_set_A, Data_set_B, by = &quot;identifier&quot;, all.x = FALSE, all.y = TRUE) #right join
+contiguous &lt;- dplyr::right_join(Data_set_A, Data_set_B, by = join_by(identifier == identifier))</code></pre>
+<pre><code>## Warning in dplyr::right_join(Data_set_A, Data_set_B, by = join_by(identifier == : Detected an unexpected many-to-many relationship between `x` and `y`.
+## ℹ Row 1 of `x` matches multiple rows in `y`.
+## ℹ Row 1 of `y` matches multiple rows in `x`.
+## ℹ If a many-to-many relationship is expected, set `relationship =
+##   &quot;many-to-many&quot;` to silence this warning.</code></pre>
+<pre class="r"><code>summarytools::dfSummary(contiguous) </code></pre>
 <pre><code>## Data Frame Summary  
 ## contiguous  
-## Dimensions: 753125 x 4  
+## Dimensions: 753506 x 4  
 ## Duplicates: 752753  
 ## 
 ## --------------------------------------------------------------------------------------------------------------------------
 ## No   Variable                 Stats / Values               Freqs (% of Valid)    Graph                 Valid    Missing   
 ## ---- ------------------------ ---------------------------- --------------------- --------------------- -------- ----------
-## 1    identifier               Mean (sd) : 1783.7 (129.4)   371 distinct values         . : .   .   .   373      752752    
-##      [numeric]                min &lt; med &lt; max:                                         : : : : : : :   (0.0%)   (100.0%)  
-##                               1457 &lt; 1779 &lt; 2000                                     . : : : : : : :                      
-##                               IQR (CV) : 210 (0.1)                                   : : : : : : : :                      
-##                                                                                  .   : : : : : : : :                      
+## 1    identifier               Mean (sd) : 1989.5 (236.4)   752 distinct values       :     . : : : :   754      752752    
+##      [numeric]                min &lt; med &lt; max:                                       : : : : : : : :   (0.1%)   (99.9%)   
+##                               1457 &lt; 2004.5 &lt; 2381                                 . : : : : : : : :                      
+##                               IQR (CV) : 410.5 (0.1)                               : : : : : : : : :                      
+##                                                                                  . : : : : : : : : :                      
 ## 
-## 2    condition                1. control                   159 (42.9%)           IIIIIIII              371      752754    
+## 2    condition                1. control                   159 (42.9%)           IIIIIIII              371      753135    
 ##      [character]              2. recommendation            212 (57.1%)           IIIIIIIIIII           (0.0%)   (100.0%)  
 ## 
-## 3    income_level             1. LMI                       191 (51.2%)           IIIIIIIIII            373      752752    
+## 3    income_level             1. LMI                       191 (51.2%)           IIIIIIIIII            373      753133    
 ##      [character]              2. non-LMI                   182 (48.8%)           IIIIIIIII             (0.0%)   (100.0%)  
 ## 
-## 4    increased_contribution   1. 1                         369 (98.9%)           IIIIIIIIIIIIIIIIIII   373      752752    
-##      [character]              2. closed                      4 ( 1.1%)                                 (0.0%)   (100.0%)  
+## 4    increased_contribution   1. 1                         750 (99.5%)           IIIIIIIIIIIIIIIIIII   754      752752    
+##      [character]              2. closed                      4 ( 0.5%)                                 (0.1%)   (99.9%)   
 ## --------------------------------------------------------------------------------------------------------------------------</code></pre>
 <pre class="r"><code># There are multiple duplicates and 371 distinct identifiers common to both data sets (thus up to 371 cases with conditions and outcomes, ranging from 1457 to 2000 as IDs) for the analytic sample. 
 
@@ -561,15 +579,18 @@ contiguous &lt;- dplyr::distinct(contiguous)
 
 # There are still 3 rows with missing conditions.
 # Keep cases where condition is not missing:
-contiguous &lt;- filter(contiguous,!is.na(condition)) 
+contiguous &lt;- filter(contiguous,!is.na(condition)) %&gt;%
+  arrange(identifier)
+
+
 
 # There are 3 character (or raw text) columns (that should be factor variables) and an identifier that is a double (or real number) data type.
 # Save categorical variables as factor with new names for the categories:
 contiguous &lt;- contiguous %&gt;%
   mutate(
     condition = factor(condition,
-                       levels = c(&quot;recommendation&quot;,&quot;control&quot;)), #reorder factors for the contingency table
-                      #labels = c(&quot;recommendation&quot;,&quot;informational&quot;),
+                       levels = c(&quot;recommendation&quot;,&quot;control&quot;), #reorder factors for the contingency table
+                       labels = c(&quot;recommendation&quot;,&quot;informational&quot;)),
     income = factor(income_level,
                           levels = c(&quot;non-LMI&quot;,&quot;LMI&quot;)),
     outcome = factor(increased_contribution,
@@ -586,7 +607,6 @@ contiguous &lt;-  contiguous %&gt;%
 <ul>
 <li><a href="https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html" class="uri">https://bookdown.org/lyzhang10/lzhang_r_tips_book/preface.html</a></li>
 <li><a href="https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html" class="uri">https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html</a></li>
-<li><a href="https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html" class="uri">https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html</a></li>
 </ul>
 <pre class="r"><code>contiguousDE &lt;- dummify(contiguous)
 DataExplorer::create_report(contiguousDE) # creates report.html output</code></pre>
@@ -601,10 +621,44 @@ DataExplorer::create_report(contiguousDE) # creates report.html output</code></p
 <pre><code>##   |                                             |...........................          |  74%                                   |                                             |............................         |  76% [principal_component_analysis]</code></pre>
 <pre><code>##   |                                             |.............................        |  79%                                   |                                             |..............................       |  81% [bivariate_distribution_header]   |                                             |...............................      |  83%                                   |                                             |................................     |  86% [plot_response_boxplot]           |                                             |.................................    |  88%                                   |                                             |.................................    |  90% [plot_by_boxplot]                 |                                             |..................................   |  93%                                   |                                             |...................................  |  95% [plot_response_scatterplot]       |                                             |.................................... |  98%                                   |                                             |.....................................| 100% [plot_by_scatterplot]           </code></pre>
 <pre><code>## output file: C:/Users/josep/Documents/2025-CAH/report.knit.md</code></pre>
-<pre><code>## &quot;C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/pandoc&quot; +RTS -K512m -RTS &quot;C:\Users\josep\Documents\2025-CAH\report.knit.md&quot; --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandocbd0c225d3044.html --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\pagebreak.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\latex-div.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\table-classes.lua&quot; --embed-resources --standalone --variable bs3=TRUE --section-divs --table-of-contents --toc-depth 6 --template &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmd\h\default.html&quot; --no-highlight --variable highlightjs=1 --variable theme=yeti --mathjax --variable &quot;mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; --include-in-header &quot;C:\Users\josep\AppData\Local\Temp\RtmpATdaWI\rmarkdown-strbd0c6bba7ef7.html&quot;</code></pre>
+<pre><code>## &quot;C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/pandoc&quot; +RTS -K512m -RTS &quot;C:\Users\josep\Documents\2025-CAH\report.knit.md&quot; --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandocdee0b394f84.html --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\pagebreak.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\latex-div.lua&quot; --lua-filter &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmarkdown\lua\table-classes.lua&quot; --embed-resources --standalone --variable bs3=TRUE --section-divs --table-of-contents --toc-depth 6 --template &quot;C:\Users\josep\AppData\Local\R\win-library\4.5\rmarkdown\rmd\h\default.html&quot; --no-highlight --variable highlightjs=1 --variable theme=yeti --mathjax --variable &quot;mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; --include-in-header &quot;C:\Users\josep\AppData\Local\Temp\Rtmpw5hWMe\rmarkdown-strdee06993667e.html&quot;</code></pre>
 <pre><code>## 
 ## Output created: report.html</code></pre>
 <pre class="r"><code># weak correlations between contribution, condition, and income level</code></pre>
+<div id="sankey-diagram-of-the-data-sets" class="section level2">
+<h2>Sankey Diagram of the data sets</h2>
+<ul>
+<li><a href="https://r-charts.com/flow/ggalluvial/" class="uri">https://r-charts.com/flow/ggalluvial/</a></li>
+</ul>
+<pre class="r"><code># Create the values to graph:
+# may be easier to list the node-flows you&#39;d input into sankey matic as rows to bind
+
+#sankey_tab &lt;- list(A=c(&quot;LMI&quot;, 261, &quot;Informational&quot;),
+#                   B=c(&quot;LMI&quot;, 251, &quot;Recommendation&quot;),
+#                   C=c(&quot;non-LMI&quot;, 247, &quot;Informational&quot;),
+#                   D=c(&quot;non-LMI&quot;, 240, &quot;Recommendation&quot;),
+#                   E=c(&quot;Informational&quot;, 2, &quot;Closed&quot;),
+#                   F=c(&quot;Informational&quot;, 156, &quot;Contributed&quot;),
+#                   G=c(&quot;Recommendation&quot;, 2, &quot;Closed&quot;),
+#                   H=c(&quot;Recommendation&quot;, 209, &quot;Contributed&quot;),
+#                   I=c(&quot;N/A&quot;, 2, &quot;Contributed&quot;),
+#                   J=c(&quot;No demographics&quot;, 381, &quot;Contributed&quot;)
+#                   ),
+#
+#sankey_tab &lt;- as.data.frame(do.call(rbind, sankey_tab)) %&gt;%
+#  names(sankey_tab) &lt;- c(&quot;sender&quot;,&quot;flow&quot;,&quot;receiver&quot;) %&gt;%
+#  make_long (sender, flow, receiver)
+
+# Plot:
+#ggplot(data = sankey_tab, aes(axis1 = V1, axis2 = V2, axis3 = V1)) +
+#  ggalluvial::geom_alluvium(aes(fill = V1)) +
+#  geom_stratum() +
+#  geom_text(stat = &quot;stratum&quot;,
+#            aes(label = after_stat(stratum))) +
+#  scale_x_discrete(limits = c(&quot;V1&quot;, &quot;V2&quot;),
+#                   expand = c(0.15, 0.05)) +
+#  theme_void() # Removes grid lines and background</code></pre>
+</div>
 <div id="stacked-bar-chart-of-condition" class="section level2">
 <h2>Stacked Bar Chart of condition</h2>
 <ul>
@@ -613,7 +667,7 @@ DataExplorer::create_report(contiguousDE) # creates report.html output</code></p
 <pre class="r"><code># Create the values to graph:
 condition_ct  &lt;- table(contiguous$condition) #counts for each condition
 condition_pct &lt;- prop.table(condition_ct)    #percentages for each condition
-condition_tab &lt;- data.frame(condition_ct,condition_pct)
+condition_tab &lt;- data.frame(condition_ct,condition_pct) #merge variables
 condition_tab &lt;- condition_tab %&gt;%
   rename(condition = Var1, count = Freq, percent = Freq.1) %&gt;%
   select(condition, count, percent) %&gt;%
@@ -623,7 +677,7 @@ condition_tab &lt;- condition_tab %&gt;%
 bar_plot &lt;- ggplot(condition_tab, aes(x = percent, y = condition)) %&gt;% +
   geom_col(fill = &quot;#156082&quot;, width = .75, show.legend = FALSE) +
   geom_text(aes(label = paste(round(percent*100),&quot;%&quot;)), position = position_dodge(width = 1), hjust = -0.5) +
-  theme_void() +
+  theme_void() + # Removes grid lines and background
   theme(axis.ticks = element_blank(),
         axis.text.x = element_blank(),
         axis.text.y = element_text(size = 14, hjust = 1)) +
@@ -656,19 +710,15 @@ donut_tab &lt;- donut_tab %&gt;%
 
 donut_plot &lt;- ggplot(donut_tab, aes(x = hsize, y = percent, fill = income)) +
   geom_col(show.legend = FALSE) +
-  geom_text(aes(label = paste(round(percent*100), &quot;% &quot;, income)), position = position_stack(vjust = 0.5)) +
+  geom_text(aes(label = paste(round(percent*100), &quot;% &quot;, income)), position = position_stack(vjust = 0.5)) + # vertically centers labels
   coord_polar(theta = &quot;y&quot;,      # A donut chart is a bar chart with polar coordinates. 
               direction = -1) + # Set the direction to -1 so the filled in part starts at the top and goes clockwise.
-  xlim(c(0.2, hsize + 0.5)) +
+  xlim(c(0.2, hsize + 0.5)) +   # thickness of the donut from 0.2 to 4.5
   scale_fill_manual(values = c(&quot;LMI&quot;=&quot;#156082&quot;,&quot;non-LMI&quot;=&quot;#E7EAF3&quot;)) +
-  theme_void() # Removes grid lines and background +
-  labs(title = &quot;Figure 2. Donut chart of income levels&quot;)</code></pre>
-<pre><code>## $title
-## [1] &quot;Figure 2. Donut chart of income levels&quot;
-## 
-## attr(,&quot;class&quot;)
-## [1] &quot;labels&quot;</code></pre>
-<pre class="r"><code># Save plot:
+  theme_void() +                # Removes grid lines and background
+  labs(title = &quot;Figure 2. Donut chart of income levels&quot;)
+
+# Save plot:
 ggsave(donut_plot, filename = &quot;plot-donut.png&quot;)</code></pre>
 <pre><code>## Saving 7 x 5 in image</code></pre>
 </div>
@@ -679,7 +729,7 @@ ggsave(donut_plot, filename = &quot;plot-donut.png&quot;)</code></pre>
 </ul>
 <pre class="r"><code># Create the values to graph:
 waffle_ct  &lt;-  table(contiguous$outcome)   #counts for each outcome
-waffle_pct &lt;-  prop.table(waffle_ct) * 100 #percentages for each outcome to standardize to a 10x10 grid plot
+waffle_pct &lt;-  prop.table(waffle_ct) * 100 #percentages for each outcome as a number out of 100 to standardize to a 10x10 grid plot
 
 # Plot:
 waffle_plot &lt;- waffle(waffle_pct, rows = 10,
@@ -712,8 +762,8 @@ ggsave(filename = &quot;plot-mosaic_1.png&quot;,
        mosaic_1 &lt;- ggplot(data = contiguous) +
          ggmosaic::geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable
                   divider = c(&quot;vspine&quot;,&quot;hbar&quot;), # vspine keeps the column widths constant &amp; hbar lets the heights vary
-                  offset = 0.02) +
-         facet_grid(~condition) +
+                  offset = 0.02) +              # space between cells
+         facet_grid(~condition) +               # columns for conditions
          scale_fill_manual(values = c(&quot;LMI&quot;=&quot;#156082&quot;,&quot;non-LMI&quot;=&quot;#E7EAF3&quot;)) +
          #theme_void() +
          theme(panel.background = element_blank(),
@@ -743,7 +793,7 @@ ggsave(filename = &quot;plot-mosaic_1.png&quot;,
 # More LMI workers received the informational (control) email.
 
 # Create and save a mosaic plot with Pearson residuals:
-jpeg(filename = &quot;plot-Mosaic_2.png&quot;)
+jpeg(filename = &quot;plot-mosaic_2.png&quot;)
 mosaic_2 &lt;- vcd::mosaic(~ outcome + condition + income, 
                         data = contiguous, 
                         main = &quot;Retirement contributions by condition and income&quot;, 
@@ -806,7 +856,7 @@ Total
 recommendation
 </td>
 <td style="border-bottom:1px solid; text-align:center; padding:0.2cm;">
-control
+informational
 </td>
 </tr>
 <tr>

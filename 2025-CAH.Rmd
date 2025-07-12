@@ -16,6 +16,7 @@ This R markdown file includes steps to clean and analyze fictional experimental 
 ```{r}
 packages <- c("DataExplorer",
               "dplyr",
+              "ggalluvial",
               "ggmosaic",
               "ggplot2",
               "knitr",
@@ -38,6 +39,7 @@ lapply(packages, library, character.only = TRUE)
 ```
 
 # Merging, Cleaning, Transforming Data
+- https://www.infoworld.com/article/2264570/how-to-merge-data-in-r-using-r-merge-dplyr-or-datatable.html
 
 ```{r}
 # Set working directory to load and save files:
@@ -55,7 +57,9 @@ summarytools::dfSummary(Data_set_B)
 #There are 751 duplicates and 752 distinct identifiers (thus up to 752 real cases, ranging from 1457 to 2381 as IDs) making up the 1504 observations; not sure what that remaining blank row is.
 
 # Merge data frames by ID variable, then clean that data set to reduce duplication of efforts:
-contiguous <- merge(Data_set_A, Data_set_B, by="identifier")
+#contiguous <- merge(Data_set_A, Data_set_B, by = "identifier") #inner
+#contiguous <- merge(Data_set_A, Data_set_B, by = "identifier", all.x = FALSE, all.y = TRUE) #right join
+contiguous <- dplyr::right_join(Data_set_A, Data_set_B, by = join_by(identifier == identifier))
 summarytools::dfSummary(contiguous) 
 
 # There are multiple duplicates and 371 distinct identifiers common to both data sets (thus up to 371 cases with conditions and outcomes, ranging from 1457 to 2000 as IDs) for the analytic sample. 
@@ -65,15 +69,18 @@ contiguous <- dplyr::distinct(contiguous)
 
 # There are still 3 rows with missing conditions.
 # Keep cases where condition is not missing:
-contiguous <- filter(contiguous,!is.na(condition)) 
+contiguous <- filter(contiguous,!is.na(condition)) %>%
+  arrange(identifier)
+
+
 
 # There are 3 character (or raw text) columns (that should be factor variables) and an identifier that is a double (or real number) data type.
 # Save categorical variables as factor with new names for the categories:
 contiguous <- contiguous %>%
   mutate(
     condition = factor(condition,
-                       levels = c("recommendation","control")), #reorder factors for the contingency table
-                      #labels = c("recommendation","informational"),
+                       levels = c("recommendation","control"), #reorder factors for the contingency table
+                       labels = c("recommendation","informational")),
     income = factor(income_level,
                           levels = c("non-LMI","LMI")),
     outcome = factor(increased_contribution,
@@ -97,6 +104,40 @@ DataExplorer::create_report(contiguousDE) # creates report.html output
 # weak correlations between contribution, condition, and income level
 ```
 
+## Sankey Diagram of the data sets
+- https://r-charts.com/flow/ggalluvial/
+
+```{r}
+# Create the values to graph:
+# may be easier to list the node-flows you'd input into sankey matic as rows to bind
+
+#sankey_tab <- list(A=c("LMI", 261, "Informational"),
+#                   B=c("LMI", 251, "Recommendation"),
+#                   C=c("non-LMI", 247, "Informational"),
+#                   D=c("non-LMI", 240, "Recommendation"),
+#                   E=c("Informational", 2, "Closed"),
+#                   F=c("Informational", 156, "Contributed"),
+#                   G=c("Recommendation", 2, "Closed"),
+#                   H=c("Recommendation", 209, "Contributed"),
+#                   I=c("N/A", 2, "Contributed"),
+#                   J=c("No demographics", 381, "Contributed")
+#                   ),
+#
+#sankey_tab <- as.data.frame(do.call(rbind, sankey_tab)) %>%
+#  names(sankey_tab) <- c("sender","flow","receiver") %>%
+#  make_long (sender, flow, receiver)
+
+# Plot:
+#ggplot(data = sankey_tab, aes(axis1 = V1, axis2 = V2, axis3 = V1)) +
+#  ggalluvial::geom_alluvium(aes(fill = V1)) +
+#  geom_stratum() +
+#  geom_text(stat = "stratum",
+#            aes(label = after_stat(stratum))) +
+#  scale_x_discrete(limits = c("V1", "V2"),
+#                   expand = c(0.15, 0.05)) +
+#  theme_void() # Removes grid lines and background
+```
+
 ## Stacked Bar Chart of condition
 - https://www.cedricscherer.com/2021/07/05/a-quick-how-to-on-labelling-bar-graphs-in-ggplot2/#dataviz
 
@@ -104,7 +145,7 @@ DataExplorer::create_report(contiguousDE) # creates report.html output
 # Create the values to graph:
 condition_ct  <- table(contiguous$condition) #counts for each condition
 condition_pct <- prop.table(condition_ct)    #percentages for each condition
-condition_tab <- data.frame(condition_ct,condition_pct)
+condition_tab <- data.frame(condition_ct,condition_pct) #merge variables
 condition_tab <- condition_tab %>%
   rename(condition = Var1, count = Freq, percent = Freq.1) %>%
   select(condition, count, percent) %>%
@@ -114,7 +155,7 @@ condition_tab <- condition_tab %>%
 bar_plot <- ggplot(condition_tab, aes(x = percent, y = condition)) %>% +
   geom_col(fill = "#156082", width = .75, show.legend = FALSE) +
   geom_text(aes(label = paste(round(percent*100),"%")), position = position_dodge(width = 1), hjust = -0.5) +
-  theme_void() +
+  theme_void() + # Removes grid lines and background
   theme(axis.ticks = element_blank(),
         axis.text.x = element_blank(),
         axis.text.y = element_text(size = 14, hjust = 1)) +
@@ -150,12 +191,12 @@ donut_tab <- donut_tab %>%
 
 donut_plot <- ggplot(donut_tab, aes(x = hsize, y = percent, fill = income)) +
   geom_col(show.legend = FALSE) +
-  geom_text(aes(label = paste(round(percent*100), "% ", income)), position = position_stack(vjust = 0.5)) +
+  geom_text(aes(label = paste(round(percent*100), "% ", income)), position = position_stack(vjust = 0.5)) + # vertically centers labels
   coord_polar(theta = "y",      # A donut chart is a bar chart with polar coordinates. 
               direction = -1) + # Set the direction to -1 so the filled in part starts at the top and goes clockwise.
-  xlim(c(0.2, hsize + 0.5)) +
+  xlim(c(0.2, hsize + 0.5)) +   # thickness of the donut from 0.2 to 4.5
   scale_fill_manual(values = c("LMI"="#156082","non-LMI"="#E7EAF3")) +
-  theme_void() # Removes grid lines and background +
+  theme_void() +                # Removes grid lines and background
   labs(title = "Figure 2. Donut chart of income levels")
 
 # Save plot:
@@ -168,7 +209,7 @@ ggsave(donut_plot, filename = "plot-donut.png")
 ```{r}
 # Create the values to graph:
 waffle_ct  <-  table(contiguous$outcome)   #counts for each outcome
-waffle_pct <-  prop.table(waffle_ct) * 100 #percentages for each outcome to standardize to a 10x10 grid plot
+waffle_pct <-  prop.table(waffle_ct) * 100 #percentages for each outcome as a number out of 100 to standardize to a 10x10 grid plot
 
 # Plot:
 waffle_plot <- waffle(waffle_pct, rows = 10,
@@ -200,8 +241,8 @@ ggsave(filename = "plot-mosaic_1.png",
        mosaic_1 <- ggplot(data = contiguous) +
          ggmosaic::geom_mosaic(aes(x = product(outcome), fill = income), # normally, fill is your outcome variable
                   divider = c("vspine","hbar"), # vspine keeps the column widths constant & hbar lets the heights vary
-                  offset = 0.02) +
-         facet_grid(~condition) +
+                  offset = 0.02) +              # space between cells
+         facet_grid(~condition) +               # columns for conditions
          scale_fill_manual(values = c("LMI"="#156082","non-LMI"="#E7EAF3")) +
          #theme_void() +
          theme(panel.background = element_blank(),
