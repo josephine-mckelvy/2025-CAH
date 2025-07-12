@@ -68,11 +68,9 @@ summarytools::dfSummary(contiguous)
 contiguous <- dplyr::distinct(contiguous) 
 
 # There are still 3 rows with missing conditions.
-# Keep cases where condition is not missing:
-contiguous <- filter(contiguous,!is.na(condition)) %>%
+# Keep cases where identifier is not missing:
+contiguous <- filter(contiguous,!is.na(identifier)) %>%
   arrange(identifier)
-
-
 
 # There are 3 character (or raw text) columns (that should be factor variables) and an identifier that is a double (or real number) data type.
 # Save categorical variables as factor with new names for the categories:
